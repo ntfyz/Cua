@@ -1,0 +1,67 @@
+name: Build Unsigned iOS IPA (Cua)
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+    inputs:
+      version_name:
+        description: 'Tên phiên bản (VD: 1.0.0)'
+        required: false
+        default: '1.0.0'
+
+jobs:
+  build:
+    name: 🦀 Build Cua.ipa (Unsigned)
+    runs-on: macos-14
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🛠️ Setup Xcode & XcodeGen
+        run: |
+          echo "Kiểm tra phiên bản Xcode..."
+          xcodebuild -version
+          echo "Cài đặt XcodeGen..."
+          brew install xcodegen
+
+      - name: ⚙️ Generate Xcode Project
+        run: |
+          xcodegen generate
+
+      - name: 🔨 Build iOS App (.app) without Signing
+        run: |
+          xcodebuild clean build \
+            -project Cua.xcodeproj \
+            -scheme Cua \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            AD_HOC_CODE_SIGNING_ALLOWED=YES
+
+      - name: 📦 Package into Unsigned IPA (Payload/Cua.app -> Cua.ipa)
+        run: |
+          mkdir -p Payload
+          cp -r build/Build/Products/Release-iphoneos/Cua.app Payload/
+          zip -r -9 Cua.ipa Payload
+          ls -lh Cua.ipa
+
+      - name: 🚀 Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Cua-Unsigned-IPA
+          path: Cua.ipa
+          retention-days: 30
+
+      - name: 📝 Add Build Summary
+        run: |
+          echo "### 🦀 Build App Cua hoàn tất thành công! 🎉" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tên App:** Cua" >> $GITHUB_STEP_SUMMARY
+          echo "- **Loại file:** Unsigned .IPA (Không cần chứng chỉ ký)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Cách cài đặt:** Bạn có thể tải file **Cua-Unsigned-IPA** từ mục Artifacts bên dưới và cài qua **TrollStore**, **Sideloadly**, **AltStore**, **Scarlet**, hoặc **Feather**." >> $GITHUB_STEP_SUMMARY

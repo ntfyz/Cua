@@ -1,0 +1,34 @@
+name: Cua
+options:
+  bundleIdPrefix: com.example
+  deploymentTarget:
+    iOS: "16.0"
+  xcodeVersion: "15.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    PRODUCT_NAME: Cua
+    TARGETED_DEVICE_FAMILY: "1,2" # iPhone, iPad
+    CODE_SIGNING_ALLOWED: NO
+    CODE_SIGNING_REQUIRED: NO
+    CODE_SIGN_IDENTITY: ""
+    DEVELOPMENT_TEAM: ""
+    SWIFT_VERSION: "5.0"
+    INFOPLIST_FILE: Cua/Resources/Info.plist
+    ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+    GENERATE_INFOPLIST_FILE: NO
+
+targets:
+  Cua:
+    type: application
+    platform: iOS
+    sources:
+      - path: Cua
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.cua
+        DISPLAY_NAME: "Cua"
+        MARKETING_VERSION: "1.0.0"
+        CURRENT_PROJECT_VERSION: "1"
